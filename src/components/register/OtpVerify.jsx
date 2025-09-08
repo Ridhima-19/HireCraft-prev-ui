@@ -1,16 +1,29 @@
 
 
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
+import { register, verifyOtp } from "./api";
+import { enqueueSnackbar } from "notistack";
 
-export default function OtpVerify({ email, onBack }) {
+export default function OtpVerify({ onBack }) {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [counter, setCounter] = useState(30);
   const [isDisabled, setIsDisabled] = useState(true);
   const inputsRef = useRef([]);
   const navigate = useNavigate();
+  const location = useLocation();
 
+  const [searchParams] = useSearchParams();
+  const userId = searchParams.get("userId"); 
+  const { email, password } = location.state || {};
+
+  useEffect(()=>{
+    if(!email || !password){
+      navigate("/register");
+    }
+  },[])
+       
   useEffect(() => {
     if (counter > 0) {
       const timer = setTimeout(() => setCounter(counter - 1), 1000);
@@ -32,27 +45,24 @@ export default function OtpVerify({ email, onBack }) {
     }
   };
 
-  const handleVerify = (e) => {
-    e.preventDefault();
-    const enteredOtp = otp.join("");
-
-    if (enteredOtp === "123456") {
-      toast.success("OTP Verified");
-      localStorage.setItem("token", "dummyToken");
-
-      setTimeout(() => {
-        navigate("/PostJD");
-      }, 1500);
-    } else {
-      toast.error("Invalid OTP!");
+  const handleVerify = async (e) => {
+    try {
+      e.preventDefault();
+      const response = await verifyOtp(userId, otp.join(""));
+      localStorage.setItem("token", response.data.token);
+      navigate("/PostJD")
+    } catch (error) {
+      console.log(error);
     }
+    
   };
 
-  const handleResend = () => {
+  const handleResend = async () => {
     setCounter(30);
     setIsDisabled(true);
+    await register(email, password);
     setOtp(["", "", "", "", "", ""]);
-    toast("OTP resent to your email");
+    enqueueSnackbar("OTP resent to your email", {variant: "success"});
     inputsRef.current[0].focus();
   };
 

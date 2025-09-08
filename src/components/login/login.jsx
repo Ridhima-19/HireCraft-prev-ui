@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { User, Lock, Eye, EyeOff, ArrowRight, UserPlus } from "lucide-react";
+import { loginUser } from "./api";
 
 export default function login() {
   const [username, setUsername] = useState("");
@@ -12,14 +13,17 @@ export default function login() {
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    localStorage.setItem("token", "dummyToken");
-    navigate("/PostJD"); 
+    try {
+      e.preventDefault();
+      setIsLoading(true);
+      const response = await loginUser(username,password);
+      localStorage.setItem("token", response.data.token);
+      navigate("/PostJD"); 
+    } catch (error) {
+      console.log(error);
+    }finally{
+      setIsLoading(false);
+    }
   };
 
   return (

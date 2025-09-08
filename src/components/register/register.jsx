@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Mail, Lock, Eye, EyeOff, ArrowRight, UserPlus } from "lucide-react";
+import { register } from "./api";
 
 export default function Register() {
   const [email, setEmail] = useState("");
@@ -12,14 +13,19 @@ export default function Register() {
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
-    e.preventDefault();
-    
-    setIsLoading(true);
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    navigate("/otp"); 
+    try {
+      e.preventDefault();
+      setIsLoading(true);
+      const response = await register(email,password);
+      setIsLoading(false);
+      navigate(`/otp?userId=${response.data.id}`, {
+      state: { email, password },
+    });
+    } catch (error) {
+      console.log(error);
+    }finally{
+      setIsLoading(false);
+    }
   };
 
   return (
