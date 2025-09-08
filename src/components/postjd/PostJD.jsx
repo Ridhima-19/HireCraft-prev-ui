@@ -4,7 +4,8 @@ import { useNavigate } from "react-router-dom";
 
 export default function PostJD() {
   const [jobTitle, setJobTitle] = useState("");
-  const [skills, setSkills] = useState("");
+  const [mustHaveSkills, setMustHaveSkills] = useState("");
+  const [shouldHaveSkills, setShouldHaveSkills] = useState("");
   const [experience, setExperience] = useState("");
   const [platform, setPlatform] = useState("");
   const [file, setFile] = useState(null);
@@ -14,17 +15,17 @@ export default function PostJD() {
 
   const handleJDUpload = async (e) => {
     const uploadedFile = e.target.files[0];
-
     if (!uploadedFile) return;
 
+    // Size check
     const fileSizeMB = uploadedFile.size / (1024 * 1024);
     if (fileSizeMB > 10) {
       alert("JD size should be less than 10MB.");
       e.target.value = null;
-      setFile(null);
       return;
     }
 
+    // Type check
     const allowedTypes = [
       "application/pdf",
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -32,12 +33,10 @@ export default function PostJD() {
     if (!allowedTypes.includes(uploadedFile.type)) {
       alert("Only PDF and DOCX files are allowed.");
       e.target.value = null;
-      setFile(null);
       return;
     }
 
     setFile(uploadedFile);
-    alert("Job description uploaded successfully!");
     setUploading(true);
 
     const formData = new FormData();
@@ -55,7 +54,8 @@ export default function PostJD() {
         alert("JD parsing failed: " + parsed.error);
       } else {
         setJobTitle(parsed.jobTitle || "");
-        setSkills((parsed.skills || []).join(", "));
+        setMustHaveSkills((parsed.requiredSkills || []).join(", "));
+        setShouldHaveSkills((parsed.optionalSkills || []).join(", "));
         setExperience(parsed.experience || "");
         alert("JD parsed and fields auto-filled successfully!");
       }
@@ -72,7 +72,8 @@ export default function PostJD() {
 
     const jdData = {
       jobTitle,
-      skills,
+      mustHaveSkills,
+      shouldHaveSkills,
       experience,
       platform,
       fileName: file?.name || "",
@@ -83,7 +84,12 @@ export default function PostJD() {
       const response = await fetch(endpoint);
       const data = await response.json();
 
-      const keywords = skills.split(",").map((s) => s.trim().toLowerCase());
+      const keywords = [
+        ...mustHaveSkills.split(","),
+        ...shouldHaveSkills.split(","),
+      ]
+        .map((s) => s.trim().toLowerCase())
+        .filter(Boolean);
 
       const filteredCandidates = data.filter((candidate) => {
         const candidateSkills = (candidate.Skills || "").toLowerCase();
@@ -101,16 +107,16 @@ export default function PostJD() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-white rounded-xl shadow-md p-6 w-full max-w-lg"
+      className="bg-white rounded-xl shadow-md p-6 w-full max-w-lg space-y-4"
     >
-      <h3 className="text-xl font-semibold text-gray-800 mb-4">
+      <h3 className="text-xl font-semibold text-gray-800">
         Search the Matching Candidates
       </h3>
 
       {/* JD Upload */}
-      <div className="mb-5">
+      <div>
         <label className="block text-sm font-medium mb-1">
-          Upload Job Description (PDF or DOCX, Max 10MB)
+          Upload JD (PDF/DOCX, Max 10MB)
         </label>
         <input
           type="file"
@@ -118,47 +124,64 @@ export default function PostJD() {
           onChange={handleJDUpload}
           className="w-full border rounded-md px-3 py-2 bg-gray-50"
         />
-        {uploading && <p className="text-sm text-blue-500 mt-1">Parsing JD...</p>}
+        {uploading && (
+          <p className="text-sm text-blue-500 mt-1">Parsing JD...</p>
+        )}
         {file && !uploading && (
-          <p className="text-sm text-green-600 mt-1">JD Uploaded: {file.name}</p>
+          <p className="text-sm text-green-600 mt-1">Uploaded: {file.name}</p>
         )}
       </div>
 
       {/* Job Title */}
-      <div className="mb-4">
+      <div>
         <label className="block text-sm font-medium mb-1">Job Title</label>
         <input
           type="text"
-          placeholder="Enter job title (e.g. Frontend Engineer)"
+          placeholder="e.g. Frontend Engineer"
           required
           value={jobTitle}
           onChange={(e) => setJobTitle(e.target.value)}
-          className="w-full border rounded-md px-3 py-2 bg-gray-50 placeholder-gray-400"
+          className="w-full border rounded-md px-3 py-2 bg-gray-50"
         />
       </div>
 
-      {/* Skills */}
-      <div className="mb-4">
-        <label className="block text-sm font-medium mb-1">Skills</label>
+      {/* Must Have Skills */}
+      <div>
+        <label className="block text-sm font-medium mb-1">
+          Must Have Skills
+        </label>
         <input
           type="text"
-          placeholder="Required skills (e.g. JavaScript, React)"
-          required
-          value={skills}
-          onChange={(e) => setSkills(e.target.value)}
-          className="w-full border rounded-md px-3 py-2 bg-gray-50 placeholder-gray-400"
+          placeholder="e.g. JavaScript, React"
+          value={mustHaveSkills}
+          onChange={(e) => setMustHaveSkills(e.target.value)}
+          className="w-full border rounded-md px-3 py-2 bg-gray-50"
+        />
+      </div>
+
+      {/* Should Have Skills */}
+      <div>
+        <label className="block text-sm font-medium mb-1">
+          Good To Have Skills
+        </label>
+        <input
+          type="text"
+          placeholder="e.g. AWS, Docker"
+          value={shouldHaveSkills}
+          onChange={(e) => setShouldHaveSkills(e.target.value)}
+          className="w-full border rounded-md px-3 py-2 bg-gray-50"
         />
       </div>
 
       {/* Experience */}
-      <div className="mb-4">
+      <div>
         <label className="block text-sm font-medium mb-1">Experience</label>
         <input
           type="text"
           list="experience-suggestions"
           value={experience}
           onChange={(e) => setExperience(e.target.value)}
-          placeholder="e.g. Fresher, 2-5 yrs, 5+ yrs "
+          placeholder="e.g. Fresher, 2-5 yrs, 5+ yrs"
           className="w-full border rounded-md px-3 py-2 bg-gray-50"
         />
         <datalist id="experience-suggestions">
@@ -170,7 +193,7 @@ export default function PostJD() {
       </div>
 
       {/* Platform */}
-      <div className="mb-4">
+      <div>
         <label className="block text-sm font-medium mb-1">Hiring Platform</label>
         <select
           value={platform}
@@ -196,8 +219,3 @@ export default function PostJD() {
     </form>
   );
 }
-
-
-
-
-

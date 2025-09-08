@@ -27,7 +27,7 @@ const ViewApplications = () => {
   return (
     <div
       className="flex bg-gray-50 min-h-screen p-6 gap-6"
-      style={{ fontFamily: "Times New Roman, Times, serif" }}
+      
     >
       {/* Filters */}
       <div className="w-1/4 bg-white shadow rounded-2xl p-4">
