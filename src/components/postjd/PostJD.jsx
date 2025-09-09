@@ -3,10 +3,9 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FiUploadCloud } from "react-icons/fi";
-import axios from "axios";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import postJdImage from "../../assets/postJdImage.png"; 
+import { enqueueSnackbar } from 'notistack';
+import { addJd, analyzeJd } from "./api";
 
 export default function PostJD() {
   const [file, setFile] = useState(null);
@@ -27,7 +26,7 @@ export default function PostJD() {
     // Size check
     const fileSizeMB = uploadedFile.size / (1024 * 1024);
     if (fileSizeMB > 10) {
-      toast.error("JD size should be less than 10MB.");
+      enqueueSnackbar("JD size should be less than 10MB.",{variant: 'error'});
       e.target.value = null;
       return;
     }
@@ -37,81 +36,51 @@ export default function PostJD() {
       "application/pdf",
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     ];
+
     if (!allowedTypes.includes(uploadedFile.type)) {
-      toast.error("Only PDF and DOCX files are allowed.");
+      enqueueSnackbar("Only PDF and DOCX files are allowed.",{variant: 'error'});
       e.target.value = null;
       return;
     }
 
     setFile(uploadedFile);
     setLoading(true);
-    toast.info("JD uploaded. Parsing in progress...");
+    enqueueSnackbar("JD uploaded. Parsing in progress...",{variant: 'info'});
 
     const formData = new FormData();
     formData.append("file", uploadedFile);
-
+    const response = await analyzeJd(formData);
+    const { data } = response;
     try {
-      const response = await fetch("http://localhost:8080/api/jd/analyze", {
-        method: "POST",
-        body: formData,
-      });
-
-      const parsed = await response.json();
-
-      if (parsed.error) {
-        toast.error("JD parsing failed: " + parsed.error);
-      } else {
-        setJobTitle(parsed.jobTitle || "");
-        setMustHaveSkills((parsed.requiredSkills || []).join(", "));
-        setShouldHaveSkills((parsed.optionalSkills || []).join(", "));
-        setExperience(parsed.experience || "");
-        toast.success("JD parsed & fields auto-filled successfully!");
-      }
-    } catch (err) {
-      console.error("JD parsing failed:", err);
-      toast.error("Failed to parse JD. Please enter manually.");
+      setJobTitle(data.jobTitle || "");
+      setMustHaveSkills((data.requiredSkills || []).join(", "));
+      setShouldHaveSkills((data.optionalSkills || []).join(", "));
+      setExperience(data.experience || "");
     } finally {
       setLoading(false);
     }
   };
 
+  const getPayloadForAddingJd = () => {
+      const formData = new FormData();
+      formData.append("title", jobTitle);
+      formData.append("description", "");
+      formData.append("experienceLevel", experience);
+      formData.append("mustHaveSkills", mustHaveSkills);
+      formData.append("goodToHaveSkills", shouldHaveSkills);
+      formData.append("jdFile", file);
+      return formData;
+  }
+
   // Submit JD + fetch candidates
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const jdData = {
-      jobTitle,
-      mustHaveSkills,
-      shouldHaveSkills,
-      experience,
-      platform,
-      fileName: file?.name || "",
-    };
-
     try {
-      const endpoint = `http://localhost:5000/api/candidates?platform=${platform}`;
-      const response = await fetch(endpoint);
-      const data = await response.json();
-
-      const keywords = [
-        ...mustHaveSkills.split(","),
-        ...shouldHaveSkills.split(","),
-      ]
-        .map((s) => s.trim().toLowerCase())
-        .filter(Boolean);
-
-      const filteredCandidates = data.filter((candidate) => {
-        const candidateSkills = (candidate.Skills || "").toLowerCase();
-        return keywords.some((kw) => candidateSkills.includes(kw));
-      });
-
-      toast.success("Candidates fetched successfully!");
-      navigate("/candidates", {
-        state: { ...jdData, candidates: filteredCandidates },
-      });
+      const payload = getPayloadForAddingJd();
+      await addJd(payload);
+      enqueueSnackbar("JD added. We will notify you via email once reports are ready.", {variant: "info"});
     } catch (error) {
-      console.error("Error fetching candidates:", error);
-      toast.error("Error fetching candidates. Please try again.");
+      console.error("Error uploading jd", error);
     }
   };
 
@@ -251,8 +220,6 @@ export default function PostJD() {
 
       </motion.div>
 
-      
-      <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
-    </>
+          </>
   );
 }

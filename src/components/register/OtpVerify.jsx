@@ -1,8 +1,7 @@
 
 
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import toast, { Toaster } from "react-hot-toast";
+import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { register, verifyOtp } from "./api";
 import { enqueueSnackbar } from "notistack";
 
@@ -112,8 +111,6 @@ export default function OtpVerify({ onBack }) {
           </button>
         </div>
       </div>
-
-      <Toaster position="top-right" />
     </div>
   );
 }
