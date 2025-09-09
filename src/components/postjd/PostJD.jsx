@@ -219,7 +219,6 @@ export default function PostJD() {
           </motion.div>
 
       </motion.div>
-
           </>
   );
 }
