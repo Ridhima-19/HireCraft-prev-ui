@@ -11,7 +11,7 @@ export class ApiService {
     }
 
     this.api = axios.create({
-      baseURL: "http://localhost:9090",
+      baseURL: "http://localhost:8080",
     });
 
     // Add request interceptors
