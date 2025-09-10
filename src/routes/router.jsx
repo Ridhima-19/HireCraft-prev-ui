@@ -7,6 +7,7 @@ import PostJD from "../components/postjd/PostJD";
 import Login from "../components/login/login";
 import Register from "../components/register/register";
 import OtpVerify from "../components/register/OtpVerify";
+import JobList from "../components/joblist/JobList";
 
 
 import CandidateList from "../pages/CandidateList";
@@ -29,6 +30,7 @@ export default function AppRouter() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/otp" element={<OtpVerify />} />
+      
 
       {/* Protected (dashboard layout) */}
       <Route
@@ -48,7 +50,10 @@ export default function AppRouter() {
                     <Route
                       path="/view-applications"
                       element={<ViewApplications />}
+                      
                     />
+                    <Route path="/JobList" element={<JobList />} />
+                    
                   </Routes>
                 </div>
               </div>

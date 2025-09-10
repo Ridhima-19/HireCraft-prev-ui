@@ -1,12 +1,10 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FiUploadCloud } from "react-icons/fi";
-import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import postJdImage from "../../assets/postJdImage.png"; 
+import postJdImage from "../../assets/postJdImage.png";
 
 export default function PostJD() {
   const [file, setFile] = useState(null);
@@ -16,6 +14,7 @@ export default function PostJD() {
   const [experience, setExperience] = useState("");
   const [platform, setPlatform] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isExperienceOpen, setIsExperienceOpen] = useState(false);
 
   const navigate = useNavigate();
 
@@ -24,7 +23,6 @@ export default function PostJD() {
     const uploadedFile = e.target.files[0];
     if (!uploadedFile) return;
 
-    // Size check
     const fileSizeMB = uploadedFile.size / (1024 * 1024);
     if (fileSizeMB > 10) {
       toast.error("JD size should be less than 10MB.");
@@ -32,7 +30,6 @@ export default function PostJD() {
       return;
     }
 
-    // Type check
     const allowedTypes = [
       "application/pdf",
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -158,52 +155,102 @@ export default function PostJD() {
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-            <input
-              type="text"
-              placeholder="Job Title"
-              value={jobTitle}
-              onChange={(e) => setJobTitle(e.target.value)}
-              className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-400 outline-none"
-              required
-            />
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Job Title</label>
               <input
                 type="text"
-                placeholder="Must Have Skills"
-                value={mustHaveSkills}
-                onChange={(e) => setMustHaveSkills(e.target.value)}
+                placeholder="Job Title"
+                value={jobTitle}
+                onChange={(e) => setJobTitle(e.target.value)}
                 className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-400 outline-none"
                 required
-              />
-              <input
-                type="text"
-                placeholder="Good To Have Skills"
-                value={shouldHaveSkills}
-                onChange={(e) => setShouldHaveSkills(e.target.value)}
-                className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-400 outline-none"
               />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <input
-                type="text"
-                placeholder="Experience (e.g. Fresher, 2-5 yrs)"
-                value={experience}
-                onChange={(e) => setExperience(e.target.value)}
-                className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-400 outline-none"
-                required
-              />
-              <select
-                value={platform}
-                onChange={(e) => setPlatform(e.target.value)}
-                className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-400 outline-none"
-                required
-              >
-                <option value="">Select Platform</option>
-                <option value="Naukri">Naukri</option>
-                <option value="LinkedIn">LinkedIn</option>
-              </select>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Must Have Skills</label>
+                <input
+                  type="text"
+                  placeholder="Must Have Skills"
+                  value={mustHaveSkills}
+                  onChange={(e) => setMustHaveSkills(e.target.value)}
+                  className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-400 outline-none"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Good To Have Skills</label>
+                <input
+                  type="text"
+                  placeholder="Good To Have Skills"
+                  value={shouldHaveSkills}
+                  onChange={(e) => setShouldHaveSkills(e.target.value)}
+                  className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-400 outline-none"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Hybrid Experience Field */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Experience</label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder="Experience (e.g. Fresher, 2-5 yrs)"
+                    value={experience}
+                    onChange={(e) => setExperience(e.target.value)}
+                    className="w-full border rounded-lg pr-10 px-4 py-2 focus:ring-2 focus:ring-indigo-400 outline-none"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setIsExperienceOpen((prev) => !prev)}
+                    className="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 hover:text-gray-700"
+                  >
+                    ▼
+                  </button>
+                  {isExperienceOpen && (
+                    <div className="absolute z-10 top-full left-0 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow">
+                      <ul className="py-1 text-sm text-gray-700">
+                        {["Fresher", "0-2 years", "2-5 years", "5+ years"].map(
+                          (range) => (
+                            <li key={range}>
+                              <button
+                                type="button"
+                                onMouseDown={(e) => {
+                                  e.preventDefault();
+                                  setExperience(range);
+                                  setIsExperienceOpen(false);
+                                }}
+                                className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                              >
+                                {range}
+                              </button>
+                            </li>
+                          )
+                        )}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Platform dropdown */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Platform</label>
+                <select
+                  value={platform}
+                  onChange={(e) => setPlatform(e.target.value)}
+                  className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-400 outline-none"
+                  required
+                >
+                  <option value="">Select Platform</option>
+                  <option value="Naukri">Naukri</option>
+                  <option value="LinkedIn">LinkedIn</option>
+                </select>
+              </div>
             </div>
 
             <motion.button
@@ -211,47 +258,50 @@ export default function PostJD() {
               whileTap={{ scale: 0.98 }}
               type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium py-3 mb-0.5 rounded-lg shadow hover:shadow-md transition disabled:opacity-50"
+              className="w-full bg-blue-600 text-white font-medium py-3 mb-0.5 rounded-lg shadow hover:bg-blue-700 transition disabled:opacity-50"
             >
               {loading ? "Uploading..." : "Find Matching Candidates"}
             </motion.button>
+
           </form>
         </div>
 
         {/* Right Info Box */}
-          <motion.div
-            initial={{ opacity: 0, x: 60 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="md:col-span-5 flex flex-col justify-center bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 rounded-2xl shadow-xl p-10"
-          >
-            
-            <motion.img
-              src={postJdImage}
-              alt="Post JD Illustration"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, ease: "easeOut", type: "spring", stiffness: 120 }}
-              className="h-56 md:h-72 object-contain mb-6 mx-auto"
-            />
+        <motion.div
+          initial={{ opacity: 0, x: 60 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="md:col-span-5 flex flex-col justify-center bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 rounded-2xl shadow-xl p-10"
+        >
+          <motion.img
+            src={postJdImage}
+            alt="Post JD Illustration"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{
+              duration: 0.8,
+              ease: "easeOut",
+              type: "spring",
+              stiffness: 120,
+            }}
+            className="h-56 md:h-72 object-contain mb-6 mx-auto"
+          />
 
-            <h3 className="text-xl font-semibold mb-2 text-gray-800">
-              Smarter Hiring Starts Here 🚀
-            </h3>
-            <p className="text-gray-600 mb-4">
-              Upload your JD, auto-extract skills & experience, and instantly match
-              with top candidates across platforms.
-            </p>
-            <ul className="text-sm text-gray-700 space-y-2">
-              <li>✔️ Auto-parse JD in seconds</li>
-              <li>✔️ Candidate filtering made easy</li>
-              <li>✔️ Integrates with Naukri, LinkedIn</li>
-            </ul>
-          </motion.div>
-
+          <h3 className="text-xl font-semibold mb-2 text-gray-800">
+            Smarter Hiring Starts Here 🚀
+          </h3>
+          <p className="text-gray-600 mb-4">
+            Upload your JD, auto-extract skills & experience, and instantly match
+            with top candidates across platforms.
+          </p>
+          <ul className="text-sm text-gray-700 space-y-2">
+            <li>✔️ Auto-parse JD in seconds</li>
+            <li>✔️ Candidate filtering made easy</li>
+            <li>✔️ Integrates with Naukri, LinkedIn</li>
+          </ul>
+        </motion.div>
       </motion.div>
 
-      
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
     </>
   );
