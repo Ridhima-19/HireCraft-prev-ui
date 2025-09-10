@@ -19,18 +19,42 @@ function ProtectedRoute({ children }) {
   return token ? children : <Navigate to="/login" replace />;
 }
 
+function PublicRoute({ children }) {
+  const token = localStorage.getItem("token");
+  return token ? <Navigate to="/jd-list" replace /> : children;
+}
+
 export default function AppRouter() {
-  
   return (
     <Routes>
       {/* Default → Login */}
-      <Route path="/" element={<Navigate to="/register" replace />} />
+      <Route path="/" element={<Navigate to="/login" replace />} />
 
-      {/* Public routes */}
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/otp" element={<OtpVerify />} />
-      
+      {/* Public Routes */}
+      <Route
+        path="/login"
+        element={
+          <PublicRoute>
+            <Login />
+          </PublicRoute>
+        }
+      />
+      <Route
+        path="/register"
+        element={
+          <PublicRoute>
+            <Register />
+          </PublicRoute>
+        }
+      />
+      <Route
+        path="/otp"
+        element={
+          <PublicRoute>
+            <OtpVerify />
+          </PublicRoute>
+        }
+      />
 
       {/* Protected (dashboard layout) */}
       <Route
@@ -38,8 +62,6 @@ export default function AppRouter() {
         element={
           <ProtectedRoute>
             <div className="flex bg-gray-100 min-h-screen overflow-hidden">
-              
-
               {/* Main Content */}
               <div className="flex flex-col flex-1 overflow-y-auto">
                 <Header />
@@ -47,13 +69,8 @@ export default function AppRouter() {
                   <Routes>
                     <Route path="/PostJD" element={<PostJD />} />
                     <Route path="/candidates" element={<CandidateList />} />
-                    <Route
-                      path="/view-applications"
-                      element={<ViewApplications />}
-                      
-                    />
-                    <Route path="/JobList" element={<JobList />} />
-                    
+                    <Route path="/view-applications" element={<ViewApplications />} />
+                    <Route path="/jd-list" element={<JobList />} />
                   </Routes>
                 </div>
               </div>
@@ -64,3 +81,4 @@ export default function AppRouter() {
     </Routes>
   );
 }
+
