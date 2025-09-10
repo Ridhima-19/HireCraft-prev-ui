@@ -8,7 +8,6 @@ import { addJd, analyzeJd } from "./api";
 
 export default function PostJD() {
   const [file, setFile] = useState(null);
-  const [file, setFile] = useState(null);
   const [jobTitle, setJobTitle] = useState("");
   const [mustHaveSkills, setMustHaveSkills] = useState("");
   const [shouldHaveSkills, setShouldHaveSkills] = useState("");
@@ -16,13 +15,9 @@ export default function PostJD() {
   const [platform, setPlatform] = useState("");
   const [loading, setLoading] = useState(false);
   const [isExperienceOpen, setIsExperienceOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [isExperienceOpen, setIsExperienceOpen] = useState(false);
 
   const navigate = useNavigate();
 
-  // Handle file upload + parsing
-  const handleFileChange = async (e) => {
   // Handle file upload + parsing
   const handleFileChange = async (e) => {
     const uploadedFile = e.target.files[0];
@@ -30,7 +25,7 @@ export default function PostJD() {
 
     const fileSizeMB = uploadedFile.size / (1024 * 1024);
     if (fileSizeMB > 10) {
-      enqueueSnackbar("JD size should be less than 10MB.",{variant: 'error'});
+      enqueueSnackbar("JD size should be less than 10MB.", { variant: 'error' });
       e.target.value = null;
       return;
     }
@@ -41,40 +36,42 @@ export default function PostJD() {
     ];
 
     if (!allowedTypes.includes(uploadedFile.type)) {
-      enqueueSnackbar("Only PDF and DOCX files are allowed.",{variant: 'error'});
+      enqueueSnackbar("Only PDF and DOCX files are allowed.", { variant: 'error' });
       e.target.value = null;
       return;
     }
 
     setFile(uploadedFile);
     setLoading(true);
-    enqueueSnackbar("JD uploaded. Parsing in progress...",{variant: 'info'});
+    enqueueSnackbar("JD uploaded. Parsing in progress...", { variant: 'info' });
 
-    const formData = new FormData();
-    formData.append("file", uploadedFile);
-    const response = await analyzeJd(formData);
-    const { data } = response;
     try {
+      const formData = new FormData();
+      formData.append("file", uploadedFile);
+      const response = await analyzeJd(formData);
+      const { data } = response;
+
       setJobTitle(data.jobTitle || "");
       setMustHaveSkills((data.requiredSkills || []).join(", "));
       setShouldHaveSkills((data.optionalSkills || []).join(", "));
       setExperience(data.experience || "");
+    } catch (error) {
+      console.error("Error analyzing JD:", error);
     } finally {
-      setLoading(false);
       setLoading(false);
     }
   };
 
   const getPayloadForAddingJd = () => {
-      const formData = new FormData();
-      formData.append("title", jobTitle);
-      formData.append("description", "");
-      formData.append("experienceLevel", experience);
-      formData.append("mustHaveSkills", mustHaveSkills);
-      formData.append("goodToHaveSkills", shouldHaveSkills);
-      formData.append("jdFile", file);
-      return formData;
-  }
+    const formData = new FormData();
+    formData.append("title", jobTitle);
+    formData.append("description", "");
+    formData.append("experienceLevel", experience);
+    formData.append("mustHaveSkills", mustHaveSkills);
+    formData.append("goodToHaveSkills", shouldHaveSkills);
+    formData.append("jdFile", file);
+    return formData;
+  };
 
   // Submit JD + fetch candidates
   const handleSubmit = async (e) => {
@@ -82,7 +79,7 @@ export default function PostJD() {
     try {
       const payload = getPayloadForAddingJd();
       await addJd(payload);
-      enqueueSnackbar("JD added. We will notify you via email once reports are ready.", {variant: "info"});
+      enqueueSnackbar("JD added. We will notify you via email once reports are ready.", { variant: "info" });
     } catch (error) {
       console.error("Error uploading jd", error);
     }
@@ -128,45 +125,6 @@ export default function PostJD() {
               </label>
             )}
           </div>
-    <>
-      <motion.div
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
-        className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-12 gap-10"
-      >
-        {/* Left: Form */}
-        <div className="md:col-span-7 bg-white rounded-2xl shadow-xl p-8 border border-gray-100 mt-0.5">
-          <h2 className="text-2xl font-bold mb-2 text-gray-800">
-            Upload Job Description
-          </h2>
-          <p className="text-sm text-gray-500 mb-6">
-            Upload a JD or fill details below — our parser will auto-extract info
-            & fetch candidates.
-          </p>
-
-          {/* Upload Box */}
-          <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 flex flex-col items-center justify-center text-gray-500 hover:border-indigo-400 hover:bg-indigo-50 transition cursor-pointer mb-0.5">
-            <FiUploadCloud className="text-3xl mb-2 text-indigo-500" />
-            {file ? (
-              <p className="text-sm text-gray-700">{file.name}</p>
-            ) : (
-              <label className="cursor-pointer text-center">
-                <span className="block text-sm font-medium">
-                  Click to upload or drag & drop
-                </span>
-                <span className="text-xs text-gray-400">
-                  PDF or DOCX (Max 10MB)
-                </span>
-                <input
-                  type="file"
-                  accept=".pdf,.docx"
-                  onChange={handleFileChange}
-                  className="hidden"
-                />
-              </label>
-            )}
-          </div>
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="mt-6 space-y-4">
@@ -181,43 +139,7 @@ export default function PostJD() {
                 required
               />
             </div>
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Job Title</label>
-              <input
-                type="text"
-                placeholder="Job Title"
-                value={jobTitle}
-                onChange={(e) => setJobTitle(e.target.value)}
-                className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-400 outline-none"
-                required
-              />
-            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Must Have Skills</label>
-                <input
-                  type="text"
-                  placeholder="Must Have Skills"
-                  value={mustHaveSkills}
-                  onChange={(e) => setMustHaveSkills(e.target.value)}
-                  className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-400 outline-none"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Good To Have Skills</label>
-                <input
-                  type="text"
-                  placeholder="Good To Have Skills"
-                  value={shouldHaveSkills}
-                  onChange={(e) => setShouldHaveSkills(e.target.value)}
-                  className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-400 outline-none"
-                />
-              </div>
-            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Must Have Skills</label>
@@ -287,67 +209,7 @@ export default function PostJD() {
                   )}
                 </div>
               </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Hybrid Experience Field */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Experience</label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    placeholder="Experience (e.g. Fresher, 2-5 yrs)"
-                    value={experience}
-                    onChange={(e) => setExperience(e.target.value)}
-                    className="w-full border rounded-lg pr-10 px-4 py-2 focus:ring-2 focus:ring-indigo-400 outline-none"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setIsExperienceOpen((prev) => !prev)}
-                    className="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 hover:text-gray-700"
-                  >
-                    ▼
-                  </button>
-                  {isExperienceOpen && (
-                    <div className="absolute z-10 top-full left-0 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow">
-                      <ul className="py-1 text-sm text-gray-700">
-                        {["Fresher", "0-2 years", "2-5 years", "5+ years"].map(
-                          (range) => (
-                            <li key={range}>
-                              <button
-                                type="button"
-                                onMouseDown={(e) => {
-                                  e.preventDefault();
-                                  setExperience(range);
-                                  setIsExperienceOpen(false);
-                                }}
-                                className="w-full text-left px-4 py-2 hover:bg-gray-100"
-                              >
-                                {range}
-                              </button>
-                            </li>
-                          )
-                        )}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-              </div>
 
-              {/* Platform dropdown */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Platform</label>
-                <select
-                  value={platform}
-                  onChange={(e) => setPlatform(e.target.value)}
-                  className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-400 outline-none"
-                  required
-                >
-                  <option value="">Select Platform</option>
-                  <option value="Naukri">Naukri</option>
-                  <option value="LinkedIn">LinkedIn</option>
-                </select>
-              </div>
-            </div>
               {/* Platform dropdown */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Platform</label>
@@ -373,7 +235,6 @@ export default function PostJD() {
             >
               {loading ? "Uploading..." : "Find Matching Candidates"}
             </motion.button>
-
           </form>
         </div>
 
@@ -412,6 +273,6 @@ export default function PostJD() {
           </ul>
         </motion.div>
       </motion.div>
-          </>
+    </>
   );
 }
