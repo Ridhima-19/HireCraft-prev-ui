@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter as Router } from "react-router-dom";
 import AppRouter from "./routes/router";
 import { SnackbarProvider } from "notistack";
+import { UserProvider } from "./components/global-state/userProvider";
 
 function App() {
   return (
@@ -12,7 +13,9 @@ function App() {
           anchorOrigin={{ vertical: "top", horizontal: "right" }} // position
           preventDuplicate
       >
-        <AppRouter />
+        <UserProvider>
+          <AppRouter />
+        </UserProvider>
       </SnackbarProvider>
     </Router>
   );

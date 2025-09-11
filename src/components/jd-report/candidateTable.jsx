@@ -115,8 +115,8 @@ const CandidateTable = () => {
             </div>
           )}
 
-          <div className="overflow-x-auto">
-            <table className="min-w-full border-separate border-spacing-0 text-sm">
+          <div className="overflow-auto  max-h-[500px]">
+            <table className="min-w-full  border-separate border-spacing-0 text-sm">
               {/* Table Head */}
               <thead className="sticky top-0 z-20 bg-gray-100 text-gray-700 shadow-sm">
                 {table.getHeaderGroups().map((headerGroup) => (

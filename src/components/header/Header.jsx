@@ -1,11 +1,16 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useContext } from "react";
 import { FaUserCircle } from "react-icons/fa";
 import { NavLink, useNavigate } from "react-router-dom";
+import { UserContext } from "../global-state/userContext";
+import { getProfile } from "./../../routes/api";
+import UserDropdown from "./userDropDown";
 import { ApiService } from "../../../util/apiService";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const userContext = useContext(UserContext);
+  const { state, dispatch } = userContext;
   const navigate = useNavigate();
 
   
@@ -19,12 +24,29 @@ export default function Header() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const populateUserContext = ()=>{
+    const token = localStorage.getItem("token");
+    if (token) {
+      getProfile().then((response) => {
+        dispatch({
+          type: "LOGIN_USER",
+          payload: { user: response.data },
+        });
+      });
+    }
+  }
+
   const handleLogout = () => {
     const instance = ApiService.getInstance();
     instance.logout();
     navigate("/login");
+    dispatch({type: "LOGOUT_USER"});
     setOpen(false);
   };
+
+    useEffect(() => {
+      populateUserContext();
+  }, []);
 
   return (
     <header className="flex items-center justify-between px-6 py-4 bg-white border-b shadow-sm">
@@ -57,17 +79,12 @@ export default function Header() {
           className="text-2xl text-[#0B1C3F] cursor-pointer"
           onClick={() => setOpen((prev) => !prev)}
         />
-
-        {open && (
-          <div className="absolute right-0 mt-2 w-40 bg-white border rounded-lg shadow-lg py-2 z-50">
-            <button
-              onClick={handleLogout}
-              className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-            >
-              Logout
-            </button>
-          </div>
-        )}
+        {!!state.user && <UserDropdown
+         user={state.user} 
+         open={open} 
+         setOpen={setOpen}
+         handleLogout={handleLogout}
+          />}
       </div>
     </header>
   );
