@@ -42,20 +42,12 @@ export default function Header() {
           Upload JD
         </NavLink>
         <NavLink
-          to="/select-candidates"
+          to="/jd-list"
           className={({ isActive }) =>
             isActive ? "text-blue-600 font-semibold" : "hover:text-[#0B1C3F]"
           }
         >
-          Select Candidate
-        </NavLink>
-        <NavLink
-          to="/view-applications"
-          className={({ isActive }) =>
-            isActive ? "text-blue-600 font-semibold" : "hover:text-[#0B1C3F]"
-          }
-        >
-          View Applications
+          List JD
         </NavLink>
       </nav>
 

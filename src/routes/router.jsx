@@ -10,8 +10,8 @@ import OtpVerify from "../components/register/OtpVerify";
 import JobList from "../components/joblist/JobList";
 
 
-import CandidateList from "../pages/CandidateList";
 import ViewApplications from "../pages/ViewApplications";
+import CandidateTable from "../components/jd-report/candidateTable";
 
 // Protected Route Component
 function ProtectedRoute({ children }) {
@@ -65,15 +65,12 @@ export default function AppRouter() {
               {/* Main Content */}
               <div className="flex flex-col flex-1 overflow-y-auto">
                 <Header />
-                <div className="flex justify-center items-center flex-1 p-6">
                   <Routes>
                     <Route path="/PostJD" element={<PostJD />} />
-                    <Route path="/candidates" element={<CandidateList />} />
-                    <Route path="/view-applications" element={<ViewApplications />} />
                     <Route path="/jd-list" element={<JobList />} />
+                    <Route path="/jd-report" element={<CandidateTable />} />
                   </Routes>
                 </div>
-              </div>
             </div>
           </ProtectedRoute>
         }

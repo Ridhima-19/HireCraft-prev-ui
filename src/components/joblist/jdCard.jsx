@@ -1,6 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { FileText, Briefcase, Tags } from "lucide-react";
+import { Link } from "react-router-dom";
 
 // Utility: date format
 const formatDate = (dateStr) => {
@@ -87,25 +88,20 @@ export default function JDCard({ job }) {
       {/* Footer */}
       <div className="mt-3 flex justify-end gap-2">
         <a
-            // href={`https://docs.google.com/gview?embedded=true&url=${encodeURIComponent(job.jdPdfUrl)}`}
             href={job.jdPdfUrl}
-            target="_blank"
-            rel="noopener noreferrer"
             className="text-blue-800 text-sm font-semibold px-2 py-1 rounded-md hover:bg-blue-50 transition-colors flex items-center gap-1"
             >
             <FileText size={14} />
             JD
         </a>
 
-        <a
-          href="#"
-          target="_blank"
-          rel="noopener noreferrer"
+        <Link
+          to={`/jd-report?jdId=${job.id}`}
           className="text-blue-800 text-sm font-semibold px-2 py-1 rounded-md hover:bg-blue-50 transition-colors flex items-center gap-1"
         >
           <FileText size={14} />
           Report
-        </a>
+        </Link>
       </div>
     </motion.div>
   );

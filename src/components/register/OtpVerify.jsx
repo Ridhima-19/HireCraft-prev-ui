@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import toast, { Toaster } from "react-hot-toast";
 import { register, verifyOtp } from "./api";
 import { enqueueSnackbar } from "notistack";
 

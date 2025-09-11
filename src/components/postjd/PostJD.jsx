@@ -86,7 +86,7 @@ export default function PostJD() {
   };
 
   return (
-    <>
+    <div className="flex justify-center items-center flex-1 p-6">
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
@@ -273,6 +273,6 @@ export default function PostJD() {
           </ul>
         </motion.div>
       </motion.div>
-    </>
+    </div>
   );
 }
