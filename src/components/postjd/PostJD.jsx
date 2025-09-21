@@ -79,9 +79,29 @@ export default function PostJD() {
     try {
       const payload = getPayloadForAddingJd();
       await addJd(payload);
-      enqueueSnackbar("JD added. We will notify you via email once reports are ready.", { variant: "info" });
+
+      enqueueSnackbar(
+        "JD added. We will notify you via email once reports are ready.",
+        {
+          variant: "info",
+          autoHideDuration: 5000, // notification duration
+          onExited: () => {
+            // Reset form fields AFTER notification disappears
+            setFile(null);
+            setJobTitle("");
+            setMustHaveSkills("");
+            setShouldHaveSkills("");
+            setExperience("");
+            setPlatform("");
+
+            // Clear file input manually
+            const fileInput = document.querySelector('input[type="file"]');
+            if (fileInput) fileInput.value = null;
+          },
+        }
+      );
     } catch (error) {
-      console.error("Error uploading jd", error);
+      console.error("Error uploading JD", error);
     }
   };
 

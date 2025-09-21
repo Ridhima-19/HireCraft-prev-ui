@@ -9,6 +9,10 @@ import OtpVerify from "../components/register/OtpVerify";
 import JobList from "../components/joblist/JobList";
 import CandidateTable from "../components/jd-report/candidateTable";
 
+import Footer from "../components/landing/Footer";
+
+import Landing from "../pages/LandingPage";
+
 import { AuthGuard } from "./authGuard"; // adjust path
 
 // Public route wrapper
@@ -19,43 +23,49 @@ function PublicRoute({ children }) {
 
 export default function AppRouter() {
   return (
-    <Routes>
-      {/* Default → Login */}
-      <Route path="/" element={<Navigate to="/login" replace />} />
+      <>
+        <Routes>
+          {/* Default → Login */}
+          {/* <Route path="/" element={<Navigate to="/login" replace />} /> */}
+          <Route path="/" element={<Navigate to="/landing" replace />} />
 
-      {/* Public Routes */}
-      <Route
-        path="/login"
-        element={
-          <PublicRoute>
-            <Login />
-          </PublicRoute>
-        }
-      />
-      <Route
-        path="/register"
-        element={
-          <PublicRoute>
-            <Register />
-          </PublicRoute>
-        }
-      />
-      <Route
-        path="/otp"
-        element={
-          <PublicRoute>
-            <OtpVerify />
-          </PublicRoute>
-        }
-      />
+          {/* Public Routes */}
+          <Route
+            path="/login"
+            element={
+              <PublicRoute>
+                <Login />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <PublicRoute>
+                <Register />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/otp"
+            element={
+              <PublicRoute>
+                <OtpVerify />
+              </PublicRoute>
+            }
+          />
+          
+            <Route path="/landing" element={<Landing />} />
 
-      {/* Protected Routes (wrapped in AuthGuard) */}
-      <Route element={<AuthGuard />}>
-        {/* Nested protected routes */}
-        <Route path="/PostJD" element={<PostJD />} />
-        <Route path="/jd-list" element={<JobList />} />
-        <Route path="/jd-report" element={<CandidateTable />} />
-      </Route>
-    </Routes>
+          {/* Protected Routes (wrapped in AuthGuard) */}
+          <Route element={<AuthGuard />}>
+            {/* Nested protected routes */}
+            <Route path="/PostJD" element={<PostJD />} />
+            <Route path="/jd-list" element={<JobList />} />
+            <Route path="/jd-report" element={<CandidateTable />} />
+          </Route>
+        </Routes>
+        {/* <Footer/> */}
+      </>
   );
 }

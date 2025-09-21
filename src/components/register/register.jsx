@@ -66,7 +66,7 @@ export default function Register() {
               <UserPlus className="w-8 h-8 text-white" />
             </div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Get Started with HireCraft
+              Get Started with Hirecraft
             </h1>
             <p className="text-gray-600">Create your account and start hiring</p>
           </motion.div>

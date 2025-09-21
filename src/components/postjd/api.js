@@ -7,3 +7,5 @@ export async function analyzeJd(formData) {
 export async function addJd(formData) {
   return ApiService.getInstance().post("/api/jd", formData);
 }
+
+

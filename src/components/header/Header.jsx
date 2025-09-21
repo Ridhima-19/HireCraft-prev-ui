@@ -51,9 +51,10 @@ export default function Header() {
   return (
     <header className="flex items-center justify-between px-6 py-4 bg-white border-b shadow-sm">
       <div className="flex items-center space-x-4">
-        <span className="text-2xl font-semibold text-[#0B1C3F]">HireCraft</span>
+        <span className="text-[20px] font-extrabold text-[#4880ff] font-['Nunito_Sans']">
+          Hirecraft</span>
       </div>
-
+      
       <nav className="flex-1 flex justify-center space-x-8 text-sm font-medium text-gray-700">
         <NavLink
           to="/PostJD"

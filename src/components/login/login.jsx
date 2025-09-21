@@ -48,7 +48,7 @@ export default function login() {
             <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-2xl mb-4">
               <UserPlus className="w-8 h-8 text-white" />
             </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome back to HireCraft</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome back to Hirecraft</h1>
             <p className="text-gray-600">Login to your account and start hiring</p>
           </motion.div>
 
