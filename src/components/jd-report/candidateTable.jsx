@@ -50,7 +50,13 @@ const CandidateTable = () => {
     { header: "Company", accessorKey: "company" },
     { header: "Location", accessorKey: "location" },
     { header: "Email", accessorKey: "email" },
-    { header: "CV Score", accessorKey: "cv_score" },
+    {
+    header: "CV Score",
+    accessorFn: (row) => row.cv_score ?? row.cvScore ?? row.score ?? "-",
+    cell: (info) => (
+      <span className="font-medium text-gray-700">{info.getValue()}</span>
+    ),
+  },
     {
       header: () => <div className="text-center w-full">CV</div>,
       accessorKey: "cvpath",
