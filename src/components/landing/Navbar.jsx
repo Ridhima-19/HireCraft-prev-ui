@@ -14,7 +14,7 @@ export default function Navbar() {
         "
       >
         {/* Logo */}
-        <div className="text-[20px] font-extrabold text-[#4880ff] font-['Nunito_Sans']">
+        <div className="text-[23px] font-extrabold text-[#4880ff] font-['Nunito_Sans']">
           Hirecraft
         </div>
 

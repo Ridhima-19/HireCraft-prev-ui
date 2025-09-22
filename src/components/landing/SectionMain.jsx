@@ -25,13 +25,13 @@ export default function SectionMain() {
         {/* Text block */}
         <div className="flex flex-col gap-4 max-w-[528px]">
           <div className="flex flex-col gap-[11px]">
-            <h1 className="uppercase font-extrabold text-[52px] leading-[60px] text-black">
+            <h1 className="uppercase font-extrabold text-[48px] leading-[60px] text-black">
               AI JOB MATCHING
             </h1>
-            <h2 className="uppercase text-[52px] leading-[60px] text-black font-normal">
+            <h2 className="uppercase text-[48px] leading-[60px] text-black font-normal">
               FIND THE RIGHT
             </h2>
-            <h2 className="uppercase text-[52px] leading-[60px] text-black font-normal">
+            <h2 className="uppercase text-[48px] leading-[60px] text-black font-normal">
               CANDIDATES
             </h2>
           </div>
